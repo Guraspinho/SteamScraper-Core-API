@@ -11,6 +11,7 @@ import rateLimiter from "express-rate-limit";
 
 // errors
 import notFound from "./middlewares/notFound";
+import errorHandlerMiddleware from "./middlewares/errorHandler";
 
 // dev 
 import morgan from "morgan";
@@ -45,6 +46,8 @@ app.get("/", (req,res) =>
 });
 
 
+// errors
+app.use(errorHandlerMiddleware);
 app.use(notFound);
 
 

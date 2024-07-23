@@ -2,4 +2,4 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
 const notFound = (req, res) => res.status(http_status_codes_1.StatusCodes.NOT_FOUND).send('This page is probably not what you are looking for');
-module.exports = notFound;
+exports.default = notFound;

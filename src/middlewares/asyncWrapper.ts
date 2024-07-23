@@ -1,3 +1,5 @@
+import { Request, Response } from "express";
+
 const asyncWrapper = (fun: any) =>
 {
     return async (req: Request ,res: Response , next: any) =>
