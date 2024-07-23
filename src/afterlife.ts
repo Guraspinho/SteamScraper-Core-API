@@ -16,6 +16,10 @@ import errorHandlerMiddleware from "./middlewares/errorHandler";
 // dev 
 import morgan from "morgan";
 
+// routes
+import signupRouter from "./routes/signup";
+import loginRouter from "./routes/login";
+
 dotenv.config();
 const app = express();
 
@@ -45,6 +49,8 @@ app.get("/", (req,res) =>
     res.send("Steam Scraper");
 });
 
+app.use("/auth", signupRouter);
+app.use("/auth", loginRouter);
 
 // errors
 app.use(errorHandlerMiddleware);

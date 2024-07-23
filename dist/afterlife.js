@@ -14,6 +14,8 @@ const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const notFound_1 = __importDefault(require("./middlewares/notFound"));
 const errorHandler_1 = __importDefault(require("./middlewares/errorHandler"));
 const morgan_1 = __importDefault(require("morgan"));
+const signup_1 = __importDefault(require("./routes/signup"));
+const login_1 = __importDefault(require("./routes/login"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, morgan_1.default)("dev"));
@@ -30,6 +32,8 @@ app.use((0, express_rate_limit_1.default)({
 app.get("/", (req, res) => {
     res.send("Steam Scraper");
 });
+app.use("/auth", signup_1.default);
+app.use("/auth", login_1.default);
 app.use(errorHandler_1.default);
 app.use(notFound_1.default);
 const PORT = process.env.PORT || 5000;
