@@ -2,7 +2,6 @@ import express from "express";
 import connectDB from "./db/mongo"
 import dotenv from "dotenv";
 
-
 // Security
 import cors from "cors";
 import helmet from "helmet";
@@ -10,10 +9,16 @@ import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import rateLimiter from "express-rate-limit";
 
+// errors
+import notFound from "./middlewares/notFound";
+
+// dev 
+import morgan from "morgan";
 
 dotenv.config();
 const app = express();
 
+app.use(morgan("dev"));
 app.use(express.json());
 
 
@@ -39,6 +44,8 @@ app.get("/", (req,res) =>
     res.send("Steam Scraper");
 });
 
+
+app.use(notFound);
 
 
 
