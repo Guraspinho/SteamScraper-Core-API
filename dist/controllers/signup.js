@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resendConfirmationLink = exports.confirmEmail = exports.signup = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const asyncWrapper_1 = __importDefault(require("../middlewares/asyncWrapper"));
+const emails_1 = require("../utils/emails");
 const badRequest_1 = __importDefault(require("../errors/badRequest"));
 const users_1 = __importDefault(require("../models/users"));
 exports.signup = (0, asyncWrapper_1.default)(async (req, res) => {
@@ -20,7 +21,9 @@ exports.signup = (0, asyncWrapper_1.default)(async (req, res) => {
     if (!saveUser) {
         throw new badRequest_1.default("Could not save a user");
     }
-    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed up successfully" });
+    const verificationToken = saveUser.emailVerificationToken();
+    (0, emails_1.sendVerificationEmail)(email, verificationToken);
+    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed up successfully", email: "Confirmation link was sent to your email" });
 });
 exports.confirmEmail = (0, asyncWrapper_1.default)((req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "Email confirmation was successful" });
