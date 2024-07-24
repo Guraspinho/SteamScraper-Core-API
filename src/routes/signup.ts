@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.route("/signup").post(signup);
-router.route("/verify/:id").get(confirmEmail);
+router.route("/verify").get(confirmEmail);
 router.route("/resend/link").post(resendConfirmationLink);
 
 export default router;
