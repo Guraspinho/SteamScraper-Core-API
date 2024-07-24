@@ -34,8 +34,8 @@ app.get("/", (req, res) => {
 });
 app.use("/auth", signup_1.default);
 app.use("/auth", login_1.default);
-app.use(errorHandler_1.default);
 app.use(notFound_1.default);
+app.use(errorHandler_1.default);
 const PORT = process.env.PORT || 5000;
 const start = async () => {
     try {

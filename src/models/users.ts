@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const userSchema = new mongoose.Schema(
     {
         username:
@@ -31,7 +35,6 @@ const userSchema = new mongoose.Schema(
 );
 
 // Schema methods
-
 
 
 // create JWT
@@ -85,4 +88,6 @@ userSchema.methods.comparePasswords = async function(candidatePassword: string):
 
 
 
-export default mongoose.model("User", userSchema);
+const User =  mongoose.model("User", userSchema);
+export default User;
+

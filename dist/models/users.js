@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const userSchema = new mongoose_1.default.Schema({
     username: {
         type: String,
@@ -52,4 +54,5 @@ userSchema.methods.comparePasswords = async function (candidatePassword) {
     const isMatch = await bcryptjs_1.default.compare(candidatePassword, this.password);
     return isMatch;
 };
-exports.default = mongoose_1.default.model("User", userSchema);
+const User = mongoose_1.default.model("User", userSchema);
+exports.default = User;

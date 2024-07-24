@@ -49,12 +49,13 @@ app.get("/", (req,res) =>
     res.send("Steam Scraper");
 });
 
+
 app.use("/auth", signupRouter);
 app.use("/auth", loginRouter);
 
 // errors
-app.use(errorHandlerMiddleware);
 app.use(notFound);
+app.use(errorHandlerMiddleware);
 
 
 
