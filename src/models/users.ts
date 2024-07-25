@@ -1,8 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { CallbackError } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"
 
+import argon2 from "argon2";
+
 import dotenv from "dotenv";
+import { callbackPromise } from "nodemailer/lib/shared";
 
 dotenv.config();
 
@@ -12,9 +15,10 @@ interface IUser extends mongoose.Document
     email: string;
     password: string;
     verified: boolean;
+    createJWT: () => string;
     emailVerificationToken: () => string;
     passwordResetToken: () => string;
-    comparePasswords: () => Promise<boolean>;
+    comparePasswords: (candidatePassword:string) => Promise<boolean>;
 }
 
 const userSchema = new mongoose.Schema(
@@ -74,27 +78,30 @@ userSchema.methods.passwordResetToken = function(): string
 
 
 // encrypt the password
-userSchema.pre('save', async function(): Promise<void>
+userSchema.pre('save', async function(next): Promise<void>
 {
+    if (!this.isModified('password'))
+    {
+        return next();
+    }
     try
     {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(this.password,salt);
+        const hashedPassword = await argon2.hash(this.password);
         this.password = hashedPassword;
-
-    }
+        next();
+    } 
     catch (error)
     {
-        console.error(error);
+        next(error as CallbackError);
     }
-
-})
+});
 
 
 // compare provided password to the one that is in the db.
 userSchema.methods.comparePasswords = async function(candidatePassword: string): Promise<boolean>
 {
-    const isMatch = await bcrypt.compare(candidatePassword,this.password);
+    const isMatch = await argon2.verify(this.password,candidatePassword);
+   
     return isMatch;
 }
 

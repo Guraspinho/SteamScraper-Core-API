@@ -42,7 +42,7 @@ export const signup = asyncWrapper( async (req: Request, res: Response) =>
     const verificationToken = saveUser.emailVerificationToken();
     await sendVerificationEmail(email,verificationToken);
 
-    res.status(StatusCodes.OK).json({msg: "User signed up successfully", email: "Confirmation link was sent to your email"});
+    res.status(StatusCodes.OK).json({msg: "User signed up successfully", email: "Verification link was sent to your email"});
 });
 
 interface TokenInfo
@@ -75,7 +75,7 @@ export const confirmEmail = asyncWrapper( async (req: Request, res: Response) =>
 
 
     // verify the token and update the verified value to true for the users.
-    res.status(StatusCodes.OK).json({msg: "Email confirmation was successful"});
+    res.status(StatusCodes.OK).json({msg: "Email verification was successful"});
 });
 
 

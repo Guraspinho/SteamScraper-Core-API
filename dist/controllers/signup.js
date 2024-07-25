@@ -22,7 +22,7 @@ exports.signup = (0, asyncWrapper_1.default)(async (req, res) => {
         throw new badRequest_1.default("Could not save a user");
     const verificationToken = saveUser.emailVerificationToken();
     await (0, emails_1.sendVerificationEmail)(email, verificationToken);
-    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed up successfully", email: "Confirmation link was sent to your email" });
+    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed up successfully", email: "Verification link was sent to your email" });
 });
 exports.confirmEmail = (0, asyncWrapper_1.default)(async (req, res) => {
     const token = req.query.token;
@@ -38,7 +38,7 @@ exports.confirmEmail = (0, asyncWrapper_1.default)(async (req, res) => {
         throw new notFound_1.default("User not found");
     user.verified = true;
     user.save();
-    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "Email confirmation was successful" });
+    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "Email verification was successful" });
 });
 exports.resendConfirmationLink = (0, asyncWrapper_1.default)((req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "Confirmation link was sent successfully" });

@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const argon2_1 = __importDefault(require("argon2"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const userSchema = new mongoose_1.default.Schema({
@@ -41,18 +41,21 @@ userSchema.methods.emailVerificationToken = function () {
 userSchema.methods.passwordResetToken = function () {
     return jsonwebtoken_1.default.sign({ userID: this._id, username: this.username }, JWT_SECRET, { expiresIn: process.env.PASSWORD_RESET_TOKEN_LIFETIME });
 };
-userSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        return next();
+    }
     try {
-        const salt = await bcryptjs_1.default.genSalt(10);
-        const hashedPassword = await bcryptjs_1.default.hash(this.password, salt);
+        const hashedPassword = await argon2_1.default.hash(this.password);
         this.password = hashedPassword;
+        next();
     }
     catch (error) {
-        console.error(error);
+        next(error);
     }
 });
 userSchema.methods.comparePasswords = async function (candidatePassword) {
-    const isMatch = await bcryptjs_1.default.compare(candidatePassword, this.password);
+    const isMatch = await argon2_1.default.verify(this.password, candidatePassword);
     return isMatch;
 };
 const User = mongoose_1.default.model("User", userSchema);
