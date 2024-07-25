@@ -9,6 +9,7 @@ const asyncWrapper_1 = __importDefault(require("../middlewares/asyncWrapper"));
 const badRequest_1 = __importDefault(require("../errors/badRequest"));
 const notFound_1 = __importDefault(require("../errors/notFound"));
 const users_1 = __importDefault(require("../models/users"));
+const emails_1 = require("../utils/emails");
 exports.login = (0, asyncWrapper_1.default)(async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password)
@@ -24,7 +25,18 @@ exports.login = (0, asyncWrapper_1.default)(async (req, res) => {
     const token = user.createJWT();
     res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "Logged in successfully", token });
 });
-exports.forgotPassword = (0, asyncWrapper_1.default)((req, res) => {
+exports.forgotPassword = (0, asyncWrapper_1.default)(async (req, res) => {
+    const email = req.body.email;
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(email)) {
+        throw new badRequest_1.default("The email address you entered is invalid. Please try again.");
+    }
+    const user = await users_1.default.findOne({ email });
+    if (!user) {
+        throw new notFound_1.default("The email address you entered is invalid. Please try again.");
+    }
+    const token = user.createJWT();
+    await (0, emails_1.sendPasswordResetEmail)(email, token);
     res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "Password reset link was sent to email" });
 });
 exports.resetPassword = (0, asyncWrapper_1.default)((req, res) => {

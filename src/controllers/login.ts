@@ -7,6 +7,7 @@ import BadRequestError from "../errors/badRequest";
 import NotFoundError from "../errors/notFound";
 
 import User from "../models/users";
+import { sendPasswordResetEmail } from "../utils/emails";
 
 interface LoginCredentials
 {
@@ -30,7 +31,7 @@ export const login = asyncWrapper( async (req: Request, res: Response) =>
     if(!isPasswordCorrect) throw new BadRequestError("Email or password is incorrect");
 
     // check if the user has their email verified
-    if(!user.verified) throw new BadRequestError("You need to verify your email first");
+    if(!user.verified) throw new BadRequestError("You need to verify your email first");    
     
     
     const token = user.createJWT();
@@ -38,8 +39,30 @@ export const login = asyncWrapper( async (req: Request, res: Response) =>
     res.status(StatusCodes.OK).json({msg: "Logged in successfully", token});
 });
 
-export const forgotPassword = asyncWrapper((req: Request, res: Response) =>
-{
+
+export const forgotPassword = asyncWrapper( async (req: Request, res: Response) =>
+{  
+    const email: string  = req.body.email;
+
+    // check if email is valid
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!emailRegex.test(email))
+    {
+        throw new BadRequestError("The email address you entered is invalid. Please try again.");
+    }
+
+    // check if user with such email exists
+    const user = await User.findOne({ email });
+
+    if (!user)
+    {
+        throw new NotFoundError("The email address you entered is invalid. Please try again.");
+    }
+
+    const token = user.createJWT();
+    await sendPasswordResetEmail(email, token);
+
     res.status(StatusCodes.OK).json({msg: "Password reset link was sent to email"});
 });
 

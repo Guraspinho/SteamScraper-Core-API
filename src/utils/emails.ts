@@ -165,7 +165,7 @@ export async function sendPasswordResetEmail(email: string, text:string): Promis
         <div class="container">
             <h2>Reset Password</h2>
             <p>Click the link below to reset your password.</p>
-            <a href="https://cvmaker.ge/en/signin/reset/change-password/?token=${encodeURIComponent(text)}" class="button">Reset Password</a>
+            <a href="http://localhost:5000/auth/resetEmail?token=${encodeURIComponent(text)}" class="button">Reset Password</a>
             <p>This link will expire in 1 hour.</p>
         </div>
     </body>
