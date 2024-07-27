@@ -4,12 +4,26 @@ This is a core user registration and authentication api for a project called Ste
 ## Author:
 Irakli Guraspashvili
 
+## Stack:
+- Server - Node.js, Express.js.
+- Database - MongoDB.
+- Frontend - Angular.
+- API Gateway - Kong.
+- Deployment - Docker.
+
+## Architecture:
+- Micro services.
+- REST API.
+
 ## Table of Contents
 
 - [Introduction](#introduction)
-this is a test introduction for my project
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
+
+
+
+## Introduction
