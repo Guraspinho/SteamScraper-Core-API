@@ -36,5 +36,5 @@ googleUsers.methods.createJWT = function(): string
 }
 
 
-const GoogleUser = mongoose.model<IUser>("User", googleUsers);
+const GoogleUser = mongoose.model<IUser>("GoogleUser", googleUsers);
 export default GoogleUser;

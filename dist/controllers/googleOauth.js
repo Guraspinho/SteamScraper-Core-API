@@ -9,6 +9,8 @@ const http_status_codes_1 = require("http-status-codes");
 const asyncWrapper_1 = __importDefault(require("../middlewares/asyncWrapper"));
 const badRequest_1 = __importDefault(require("../errors/badRequest"));
 const unauthenticated_1 = __importDefault(require("../errors/unauthenticated"));
+const users_1 = __importDefault(require("../models/users"));
+const googleUsers_1 = __importDefault(require("../models/googleUsers"));
 exports.authorizeServer = (0, asyncWrapper_1.default)(async (req, res) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:5000');
     res.header('referrer-policy', 'no-referrer-when-downgrade');
@@ -24,7 +26,7 @@ exports.authorizeServer = (0, asyncWrapper_1.default)(async (req, res) => {
 async function getUserData(access_token) {
     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
     const data = await response.json();
-    console.log(data);
+    return data;
 }
 exports.authorizeUser = (0, asyncWrapper_1.default)(async (req, res) => {
     const code = req.query.code;
@@ -46,7 +48,21 @@ exports.authorizeUser = (0, asyncWrapper_1.default)(async (req, res) => {
     if (typeof user !== 'object' || !('access_token' in user) || typeof user.access_token !== 'string') {
         throw new badRequest_1.default("Invalid request");
     }
-    console.log('credentials', user);
-    await getUserData(user.access_token);
-    res.json({ msg: 'Success' });
+    let access_token = user.access_token;
+    const userData = await getUserData(access_token);
+    const { given_name, email } = userData;
+    const alreadyUser = await users_1.default.findOne({ email });
+    if (alreadyUser) {
+        throw new badRequest_1.default("Email already in use try a different one");
+    }
+    const googleUser = await googleUsers_1.default.findOne({ email });
+    if (googleUser) {
+        const token = googleUser.createJWT();
+        res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed in successfully", user: { username: given_name, email }, token });
+    }
+    else {
+        const newUser = await googleUsers_1.default.create({ username: given_name, email });
+        const token = newUser.createJWT();
+        res.status(http_status_codes_1.StatusCodes.CREATED).json({ msg: "User signed up successfully", user: { usernamename: given_name, email }, token });
+    }
 });

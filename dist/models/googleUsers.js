@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const googleUsers = new mongoose_1.default.Schema({
     username: {
         type: String,
@@ -17,5 +18,11 @@ const googleUsers = new mongoose_1.default.Schema({
         match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Please provide a valid email address"]
     },
 }, { timestamps: true });
-const GoogleUser = mongoose_1.default.model("User", googleUsers);
+if (!process.env.JWT_SECRET)
+    throw new Error("JWT_SECRET is undefined");
+const JWT_SECRET = process.env.JWT_SECRET;
+googleUsers.methods.createJWT = function () {
+    return jsonwebtoken_1.default.sign({ userID: this._id, username: this.username }, JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME });
+};
+const GoogleUser = mongoose_1.default.model("GoogleUser", googleUsers);
 exports.default = GoogleUser;

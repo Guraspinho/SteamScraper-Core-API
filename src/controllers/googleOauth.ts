@@ -3,7 +3,6 @@ import {OAuth2Client} from "google-auth-library"
 
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
 
 import asyncWrapper from "../middlewares/asyncWrapper";
 
@@ -11,6 +10,8 @@ import BadRequestError from "../errors/badRequest";
 import NotFoundError from "../errors/notFound";
 import UnauthenticatedError from "../errors/unauthenticated";
 
+import User from "../models/users";
+import GoogleUser from "../models/googleUsers";
 
 
 export const authorizeServer = asyncWrapper ( async (req: Request,res: Response) =>
@@ -44,12 +45,11 @@ export const authorizeServer = asyncWrapper ( async (req: Request,res: Response)
 
 
 
-async function getUserData(access_token: string)
+async function getUserData(access_token: string): Promise<{ given_name: string, email: string }>
 {
     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
     const data = await response.json();
-    console.log(data);
-
+    return data;
 }
 
 export const authorizeUser = asyncWrapper( async (req: Request, res:Response)=>
@@ -88,12 +88,37 @@ export const authorizeUser = asyncWrapper( async (req: Request, res:Response)=>
         throw new BadRequestError("Invalid request");
     }
 
-    console.log('credentials',user);
+    // this part is for extracting email from a google token and creating jwt on it  
 
-    await getUserData(user.access_token);
+    let access_token = user.access_token;
 
-    res.json({msg:'Success'});
+    const userData = await getUserData(access_token);
 
+    // extract user data
+    const {given_name, email} = userData;
+
+    // check if user with such email exists
+    const alreadyUser = await User.findOne({email}); // check if the user is in users collection
+
+    if(alreadyUser)
+    {
+        throw new BadRequestError("Email already in use try a different one");
+    }
+
+    // check if user with such email exists
+    const googleUser = await GoogleUser.findOne({email}); // check if the user is in oauths collection
+
+    if(googleUser)
+    {
+        const token =  googleUser.createJWT();
+        res.status(StatusCodes.OK).json({msg: "User signed in successfully" , user: {username: given_name, email}, token});
+    }
+    else
+    {
+        const newUser = await GoogleUser.create({username: given_name, email});
+        const token = newUser.createJWT();
+        res.status(StatusCodes.CREATED).json( {msg: "User signed up successfully" , user: {usernamename: given_name, email}, token});
+    }
 
 });
 
