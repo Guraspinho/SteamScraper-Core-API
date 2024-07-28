@@ -1,11 +1,8 @@
 import mongoose, { CallbackError } from "mongoose";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs"
-
 import argon2 from "argon2";
-
 import dotenv from "dotenv";
-import { callbackPromise } from "nodemailer/lib/shared";
+
 
 dotenv.config();
 

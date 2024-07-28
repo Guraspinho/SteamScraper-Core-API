@@ -19,6 +19,8 @@ import morgan from "morgan";
 // routes
 import signupRouter from "./routes/signup";
 import loginRouter from "./routes/login";
+import googleRouter from "./routes/googleOauth";
+
 
 dotenv.config();
 const app = express();
@@ -52,6 +54,7 @@ app.get("/", (req,res) =>
 
 app.use("/auth", signupRouter);
 app.use("/auth", loginRouter);
+app.use("/oauth", googleRouter);
 
 // errors
 app.use(notFound);

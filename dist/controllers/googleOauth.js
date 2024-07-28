@@ -33,21 +33,20 @@ exports.authorizeUser = (0, asyncWrapper_1.default)(async (req, res) => {
         throw new unauthenticated_1.default("Headers must include auth code");
     if (typeof code !== "string")
         throw new badRequest_1.default("Invalid request");
+    const redirectUrl = 'http://localhost:5000/response/oauth';
+    const client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, redirectUrl);
     try {
-        const redirectUrl = 'http://localhost:5000/response/oauth';
-        const client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, redirectUrl);
         const googleResponse = await client.getToken(code);
         await client.setCredentials(googleResponse.tokens);
-        console.log('Token set!');
-        const user = client.credentials;
-        if (typeof user !== 'object' || !('access_token' in user) || typeof user.access_token !== 'string') {
-            throw new badRequest_1.default("Invalid request");
-        }
-        console.log('credentials', user);
-        await getUserData(user.access_token);
-        res.json({ msg: 'Success' });
     }
     catch (error) {
-        console.error(error);
+        throw new unauthenticated_1.default('Invalid or expired token');
     }
+    const user = client.credentials;
+    if (typeof user !== 'object' || !('access_token' in user) || typeof user.access_token !== 'string') {
+        throw new badRequest_1.default("Invalid request");
+    }
+    console.log('credentials', user);
+    await getUserData(user.access_token);
+    res.json({ msg: 'Success' });
 });
