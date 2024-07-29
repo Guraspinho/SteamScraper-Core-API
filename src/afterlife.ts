@@ -19,7 +19,7 @@ import morgan from "morgan";
 // routes
 import signupRouter from "./routes/signup";
 import loginRouter from "./routes/login";
-import googleRouter from "./routes/googleOauth";
+import oauthRouter from "./routes/Oauth";
 
 
 dotenv.config();
@@ -54,7 +54,7 @@ app.get("/", (req,res) =>
 
 app.use("/auth", signupRouter);
 app.use("/auth", loginRouter);
-app.use("/oauth", googleRouter);
+app.use("/oauth", oauthRouter);
 
 // errors
 app.use(notFound);
