@@ -10,7 +10,7 @@ import NotFoundError from "../errors/notFound";
 import User from "../models/users";
 
 import jwt from "jsonwebtoken";
-
+ 
 
 interface user
 {
@@ -21,6 +21,7 @@ interface user
 }
 export const signup = asyncWrapper( async (req: Request, res: Response) =>
 {
+
     const {username, email, password, repeatPassword}: user = req.body;
 
     // check if password is repeated in a body
@@ -33,7 +34,6 @@ export const signup = asyncWrapper( async (req: Request, res: Response) =>
 
     // create a new user in a db
     const saveUser = await User.create({username,email,password});
-    
 
     if(!saveUser) throw new BadRequestError("Could not save a user");
 
@@ -42,7 +42,7 @@ export const signup = asyncWrapper( async (req: Request, res: Response) =>
     const verificationToken = saveUser.emailVerificationToken();
     await sendVerificationEmail(email,verificationToken);
 
-    res.status(StatusCodes.OK).json({msg: "User signed up successfully", email: "Verification link was sent to your email"});
+    res.status(StatusCodes.OK).json({msg: "User signed up successfully", email:  "Please verify your email"});
 });
 
 interface TokenInfo
