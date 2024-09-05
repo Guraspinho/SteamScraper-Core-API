@@ -19,7 +19,7 @@ import morgan from "morgan";
 // routes
 import signupRouter from "./routes/signup";
 import loginRouter from "./routes/login";
-import oauthRouter from "./routes/Oauth";
+import oauthRouter from "./routes/oauth";
 
 
 dotenv.config();

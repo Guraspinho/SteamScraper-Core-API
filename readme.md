@@ -27,3 +27,8 @@ Irakli Guraspashvili
 
 
 ## Introduction
+
+
+
+## Features
+- User registration/login using jwt.

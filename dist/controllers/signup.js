@@ -22,7 +22,7 @@ exports.signup = (0, asyncWrapper_1.default)(async (req, res) => {
         throw new badRequest_1.default("Could not save a user");
     const verificationToken = saveUser.emailVerificationToken();
     await (0, emails_1.sendVerificationEmail)(email, verificationToken);
-    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed up successfully", email: "Verification link was sent to your email" });
+    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "User signed up successfully", email: "Please verify your email" });
 });
 exports.confirmEmail = (0, asyncWrapper_1.default)(async (req, res) => {
     const token = req.query.token;
