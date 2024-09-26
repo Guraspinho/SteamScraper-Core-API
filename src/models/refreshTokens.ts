@@ -10,10 +10,15 @@ const tokenSchema = new mongoose.Schema(
         token:
         {
             type: String,
-            required: true
+            required: true,
+        },
+        createdAt:
+        {
+            type: Date,
+            default: Date.now,
+            expires: "7d" // Automatically delete a document after 7 days
         }
     },
-    {timestamps: true}
 );
 
 
