@@ -22,7 +22,7 @@ interface user
 export const signup = asyncWrapper( async (req: Request, res: Response) =>
 {
 
-    const {username, email, password, repeatPassword}: user = req.body;
+    let {username, email, password, repeatPassword}: user = req.body;
 
     // check if password is repeated in a body
     if(!repeatPassword) throw new BadRequestError("Please repeat the password");
@@ -37,6 +37,7 @@ export const signup = asyncWrapper( async (req: Request, res: Response) =>
 
     if(!isPasswordValid) throw new BadRequestError("The password is invalid, try a different one");
 
+    email = email.toLowerCase();
     // create a new user in a db
     const saveUser = await User.create({username,email,password});
 
