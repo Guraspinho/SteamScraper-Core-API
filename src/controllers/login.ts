@@ -58,12 +58,12 @@ export const logOut = asyncWrapper( async (req: Request, res: Response) =>
 {
     const authHeader = req.headers.authorization;
 
+    
     if(!authHeader || !authHeader.startsWith("Bearer ")) throw new UnauthenticatedError("Authentication invalid");
-
     const refreshToken = authHeader.split(' ')[1];
 
+    // delete a token from a db
     const token = await RefreshToken.findOneAndDelete({token: refreshToken});
-
     if(!token) throw new UnauthenticatedError("Authentication invalid");
 
     res.status(StatusCodes.OK).json({msg: "Logged out successfully"});
