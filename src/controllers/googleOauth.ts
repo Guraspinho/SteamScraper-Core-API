@@ -110,13 +110,13 @@ export const authorizeUser = asyncWrapper( async (req: Request, res:Response)=>
 
     if(googleUser)
     {
-        const token =  googleUser.createJWT();
+        const token =  googleUser.createAccessToken();
         res.status(StatusCodes.OK).json({msg: "User signed in successfully" , user: {username: given_name, email}, token});
     }
     else
     {
         const newUser = await GoogleUser.create({username: given_name, email});
-        const token = newUser.createJWT();
+        const token = newUser.createAccessToken();
         res.status(StatusCodes.CREATED).json( {msg: "User signed up successfully" , user: {usernamename: given_name, email}, token});
     }
 

@@ -12,7 +12,7 @@ interface IUser extends mongoose.Document
     email: string;
     password: string;
     verified: boolean;
-    createJWT: () => string;
+    createAccessToken: () => string;
     emailVerificationToken: () => string;
     passwordResetToken: () => string;
     comparePasswords: (candidatePassword:string) => Promise<boolean>;
@@ -50,13 +50,19 @@ const userSchema = new mongoose.Schema(
 // Schema methods
 
 
-// create JWT
-if(!process.env.JWT_SECRET ) throw new Error("JWT_SECRET is undefined");
+// create JWT for access token
+if(!process.env.ACCESS_TOKEN_SECRET ) throw new Error("ACCESS_TOKEN_SECRET is undefined");
+
+const ACCESS_TOKEN_SECRET: string = process.env.ACCESS_TOKEN_SECRET;
+
+// create JWT for Password reset and email verification
+if(!process.env.JWT_SECRET ) throw new Error("ACCESS_TOKEN_SECRET is undefined");
+
 const JWT_SECRET: string = process.env.JWT_SECRET;
 
-userSchema.methods.createJWT = function(): string
+userSchema.methods.createAccessToken = function(): string
 {
-    return jwt.sign({userID: this._id, username: this.username}, JWT_SECRET, {expiresIn: process.env.JWT_LIFETIME});
+    return jwt.sign({userID: this._id, username: this.username}, ACCESS_TOKEN_SECRET , {expiresIn: process.env.ACCESS_TOKEN_LIFETIME});
 }
 
 

@@ -6,7 +6,7 @@ interface IUser extends mongoose.Document
 {
     username: string;
     email: string;
-    createJWT: () => string;
+    createAccessToken: () => string;
 }
 const googleUsers = new mongoose.Schema(
     {
@@ -26,13 +26,13 @@ const googleUsers = new mongoose.Schema(
     }, {timestamps: true}
 );
 
-// create JWT
-if(!process.env.JWT_SECRET ) throw new Error("JWT_SECRET is undefined");
-const JWT_SECRET: string = process.env.JWT_SECRET;
+// create JWT for access token
+if(!process.env.ACCESS_TOKEN_SECRET ) throw new Error("ACCESS_TOKEN_SECRET is undefined");
+const ACCESS_TOKEN_SECRET: string = process.env.ACCESS_TOKEN_SECRET;
 
-googleUsers.methods.createJWT = function(): string
+googleUsers.methods.createAccessToken = function(): string
 {
-    return jwt.sign({userID: this._id, username: this.username}, JWT_SECRET, {expiresIn:process.env.JWT_LIFETIME});
+    return jwt.sign({userID: this._id, username: this.username}, ACCESS_TOKEN_SECRET, {expiresIn:process.env.ACCESS_TOKEN_LIFETIME});
 }
 
 

@@ -36,7 +36,7 @@ export const login = asyncWrapper( async (req: Request, res: Response) =>
     if(!user.verified) throw new BadRequestError("You need to verify your email first");    
     
     
-    const token = user.createJWT();
+    const token = user.createAccessToken();
 
     res.status(StatusCodes.OK).json({msg: "Logged in successfully", token});
 });
@@ -58,7 +58,7 @@ export const forgotPassword = asyncWrapper( async (req: Request, res: Response) 
     if (!user) throw new NotFoundError("The email address you entered is invalid. Please try again.");
 
 
-    const token = user.createJWT();
+    const token = user.createAccessToken();
     await sendPasswordResetEmail(email, token);
 
     res.status(StatusCodes.OK).json({msg: "Password reset link was sent to your email"});

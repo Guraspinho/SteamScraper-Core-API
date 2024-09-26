@@ -27,10 +27,15 @@ export const signup = asyncWrapper( async (req: Request, res: Response) =>
     // check if password is repeated in a body
     if(!repeatPassword) throw new BadRequestError("Please repeat the password");
     
-
     // check if provided passwords match
     if(repeatPassword !== password) throw new BadRequestError("Passwords must match");
-    
+
+  
+    // A password must contain at least one uppercase character, one number and has to be at least 8 characters long.
+    const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const isPasswordValid = password.match(regex)
+
+    if(!isPasswordValid) throw new BadRequestError("The password is invalid, try a different one");
 
     // create a new user in a db
     const saveUser = await User.create({username,email,password});
