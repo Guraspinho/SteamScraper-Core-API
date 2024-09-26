@@ -8,6 +8,7 @@ import BadRequestError from "../errors/badRequest";
 import NotFoundError from "../errors/notFound";
 
 import User from "../models/users";
+import RefreshToken from "../models/refreshTokens";
 import { sendPasswordResetEmail } from "../utils/emails";
 
 
@@ -19,8 +20,7 @@ interface LoginCredentials
 export const login = asyncWrapper( async (req: Request, res: Response) =>
 {
     const {email, password}: LoginCredentials = req.body;
-    console.log(email);
-    
+
     
     // check if email and password were provided
     if(!email || !password) throw new BadRequestError("Please provide valid credentials");
@@ -30,8 +30,8 @@ export const login = asyncWrapper( async (req: Request, res: Response) =>
     
     // check if the user exists
     if(!user) throw new NotFoundError("Email or password is incorrect");
-    console.log("Im here");
     
+
     // check for password
     const isPasswordCorrect = await user.comparePasswords(password);
     if(!isPasswordCorrect) throw new BadRequestError("Email or password is incorrect");
@@ -40,9 +40,10 @@ export const login = asyncWrapper( async (req: Request, res: Response) =>
     if(!user.verified) throw new BadRequestError("You need to verify your email first");    
     
     
-    const token = user.createAccessToken();
+    const accessToken = user.createAccessToken();
+    const refreshToken = user.createRefreshToken();
 
-    res.status(StatusCodes.OK).json({msg: "Logged in successfully", token});
+    res.status(StatusCodes.OK).json({msg: "Logged in successfully", accessToken, refreshToken});
 });
 
 
