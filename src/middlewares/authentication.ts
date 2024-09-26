@@ -1,4 +1,3 @@
-import User from "../models/users";
 import UnauthenticatedError from "../errors/unauthenticated"
 import  jwt, { JwtPayload }  from "jsonwebtoken";
 

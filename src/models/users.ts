@@ -13,6 +13,7 @@ interface IUser extends mongoose.Document
     password: string;
     verified: boolean;
     createAccessToken: () => string;
+    createRefreshToken: () => string;
     emailVerificationToken: () => string;
     passwordResetToken: () => string;
     comparePasswords: (candidatePassword:string) => Promise<boolean>;
@@ -50,19 +51,23 @@ const userSchema = new mongoose.Schema(
 // Schema methods
 
 
-// create JWT for access token
-if(!process.env.ACCESS_TOKEN_SECRET ) throw new Error("ACCESS_TOKEN_SECRET is undefined");
+// create JWTs for access token and refresh token
+if(!process.env.ACCESS_TOKEN_SECRET || !process.env.JWT_SECRET || !process.env.REFRESH_TOKEN_SECRET) throw new Error("env variable is undefined");
 
 const ACCESS_TOKEN_SECRET: string = process.env.ACCESS_TOKEN_SECRET;
-
-// create JWT for Password reset and email verification
-if(!process.env.JWT_SECRET ) throw new Error("ACCESS_TOKEN_SECRET is undefined");
-
 const JWT_SECRET: string = process.env.JWT_SECRET;
+const REFRESH_TOKEN_SECRET: string = process.env.REFRESH_TOKEN_SECRET;
 
+// create access tokens
 userSchema.methods.createAccessToken = function(): string
 {
     return jwt.sign({userID: this._id, username: this.username}, ACCESS_TOKEN_SECRET , {expiresIn: process.env.ACCESS_TOKEN_LIFETIME});
+}
+
+// create refresh tokens
+userSchema.methods.createRefreshToken = function(): String
+{
+    return jwt.sign({userID: this._id, username: this.username}, REFRESH_TOKEN_SECRET , {expiresIn: process.env.REFRESH_TOKEN_LIFETIME})
 }
 
 
