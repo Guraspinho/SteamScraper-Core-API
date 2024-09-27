@@ -30,7 +30,7 @@ API also provides a way for users to recover their passwords if they forget the 
 
 
 ## Features
-- For the authentication, this API uses both Access and Refresh tokens, both of them are realised using `Json Web Token`s.
+For the authentication, this API uses both Access and Refresh tokens, both of them are realised using `Json Web Token`s.
 Flow of signing in and registering using Google accounts:
 Regular click on sign in with google, request from frontend come to a server, server authenticates to Google, then requests desired user credentials of an user,
 based on the credentials and existence of user in a db, user ether just signs in or a new user is being created.
