@@ -5,9 +5,9 @@
   "main": "/dist/afterlife.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/afterlife.js",
+    "dev": "node dist/afterlife.js",
     "build-and-run": "npm run build && npm start",
-    "dev": "nodemon --watch src --ext ts --exec \"npm run build-and-run\""
+    "start": "nodemon --watch src --ext ts --exec \"npm run build-and-run\""
   },
   "author": "Irakli Guraspashvili",
   "license": "ISC",
