@@ -7,11 +7,11 @@ import { Request, Response } from "express";
 import asyncWrapper from "../middlewares/asyncWrapper";
 
 import BadRequestError from "../errors/badRequest";
-import NotFoundError from "../errors/notFound";
 import UnauthenticatedError from "../errors/unauthenticated";
 
 import User from "../models/users";
 import GoogleUser from "../models/googleUsers";
+import RefreshToken from "../models/refreshTokens";
 
 
 export const authorizeServer = asyncWrapper ( async (req: Request,res: Response) =>
@@ -106,12 +106,13 @@ export const authorizeUser = asyncWrapper( async (req: Request, res:Response)=>
     }
 
     // check if user with such email exists
-    const googleUser = await GoogleUser.findOne({email}); // check if the user is in oauths collection
+    const googleUser = await GoogleUser.findOne({email});
 
     if(googleUser)
     {
         const accessToken =  googleUser.createAccessToken();
         const refreshToken = googleUser.createRefreshtoken();
+        await RefreshToken.create({token:refreshToken});
         res.status(StatusCodes.OK).json({msg: "User signed in successfully" , user: {username: given_name, email}, accessToken,refreshToken});
     }
     else
@@ -119,6 +120,7 @@ export const authorizeUser = asyncWrapper( async (req: Request, res:Response)=>
         const newGoogleUser = await GoogleUser.create({username: given_name, email});
         const accessToken = newGoogleUser.createAccessToken();
         const refreshToken = newGoogleUser.createRefreshtoken();
+        await RefreshToken.create({token:refreshToken});
         res.status(StatusCodes.CREATED).json( {msg: "User signed up successfully" , user: {usernamename: given_name, email}, accessToken, refreshToken});
     }
 
