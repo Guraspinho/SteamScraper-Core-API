@@ -20,6 +20,7 @@ import morgan from "morgan";
 import signupRouter from "./routes/signup";
 import loginRouter from "./routes/login";
 import oauthRouter from "./routes/oauth";
+import tokenRouter from "./routes/exchangeTokens";
 
 
 dotenv.config();
@@ -54,6 +55,7 @@ app.get("/", (req,res) =>
 
 app.use("/auth", signupRouter);
 app.use("/auth", loginRouter);
+app.use("/auth", tokenRouter)
 app.use("/oauth", oauthRouter);
 
 // errors
@@ -66,20 +68,17 @@ const PORT = process.env.PORT || 5000;
 
 const start = async () : Promise<void> =>
 {
-
     try
     {
         if(process.env.MONGO_URI)
         await connectDB(process.env.MONGO_URI);
     
-        app.listen(PORT, () => console.log(`Server running on port ${PORT}...`))
-        
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}...`)) 
     }
     catch (error)
     {
         console.error(error);    
     }
-
 }
 
 start();
